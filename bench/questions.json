@@ -1,0 +1,13 @@
+{
+  "about": "The kinds of question agents answer by hand with tmux: which pane has the error, where a server runs, whether a pane waits for input or has exited, what a pane printed, what the config sets. Each is put to the tmux server that bench/make-fixture.sh starts on the socket askkit-fixture (run it once before the bench; the sessions, programs and printed lines are fixed, so the answers do not change; `bench/make-fixture.sh stop` ends the server). Each names the socket, because the kit otherwise answers about the default server.",
+  "questions": [
+    { "id": "which-pane-error", "q": "On the tmux server with socket askkit-fixture, which pane printed an error about the night shift roster, and in which session and window is it?", "expect": ["watch", "dev|watch:1", "roster"] },
+    { "id": "waiting", "q": "On the tmux socket askkit-fixture, is any pane waiting for input? Which one, and what does it ask?", "expect": ["watch:3|prompt", "Delete the old roster"] },
+    { "id": "exited", "q": "On the tmux socket askkit-fixture, which pane has exited, and with what exit status?", "expect": ["watch:2|build", "\\b3\\b"] },
+    { "id": "server-where", "q": "On the tmux socket askkit-fixture, which pane printed that a server is listening on port 8080, and in which folder does it run?", "expect": ["watch:1|dev", "yard"] },
+    { "id": "masked", "q": "On the tmux socket askkit-fixture, what does the ledger pane show, and how many of its lines were masked?", "expect": ["ledger balance 42", "\\b2\\b"] },
+    { "id": "prefix", "q": "On the tmux socket askkit-fixture, what is the tmux prefix key, and which config file and line set it?", "expect": ["C-a", "tmux\\.conf.{0,6}1\\b|line 1"] },
+    { "id": "overview-shot", "do": "overview", "params": { "socket": "askkit-fixture" }, "expect": ["\"watch\"", "\"guild\"", "ledger", "\"dead\": 1"] },
+    { "id": "status-shot", "do": "status", "params": { "socket": "askkit-fixture" }, "expect": ["waiting-for-input", "exited", "\"exitStatus\": 3"] }
+  ]
+}

@@ -1,0 +1,42 @@
+id = "temet.tmux"
+name = "tmux"
+version = "0.1.0"
+min_ask_kit = "0.2.0"
+requires = ["tmux"]
+platforms = ["linux", "macos"]
+says = "tmux on this machine as it is now: which sessions, windows and panes exist, what runs in each pane (program, pid, folder, how long), what a pane shows or showed recently, which pane has an error or a line of output (search across all panes), whether a pane's program is waiting for input or has exited, which tmux server is in use, and what the tmux config sets (prefix, key bindings, options) and in which file; and acting on it (send keys or a command to a pane, create, rename, kill, resize or select a session, window or pane, reload the config)"
+keywords = ["tmux", "tmux sessions?", "tmux windows?", "tmux panes?", "tmux server", "tmux\\.conf", "capture-pane", "send-keys", "split-window", "prefix key", "(the|which|that|this|other) panes?", "in (a|the) (tmux )?pane"]
+route_hint = "the live state of tmux (its sessions, windows and panes, what runs in a pane, what a pane shows, whether it waits for input or exited, the tmux config) and operating it (send keys, create, kill, resize, reload) is tmux; processes and ports as such (what holds a port, what uses the CPU) are procs; shell history, aliases and PATH are shell; windows on the graphical desktop are desktop; log files on disk are logs; config files under ~/.config in general, including editing tmux.conf, are dotfiles (this kit reads what tmux loaded and where each setting is)"
+cite = "a pane target (session:window.pane) or pane id (%3), and the line of a config file as path:line"
+instructions = "instructions.md"
+state_key = "${TMUX_SOCKET}"
+acts = [
+  "tmux send-keys, paste: text or keys typed into a pane (this runs whatever is typed)",
+  "tmux new-session, new-window, split-window, break-pane, join-pane, move-pane, move-window, swap-pane, swap-window, respawn-pane, respawn-window",
+  "tmux kill-session, kill-window, kill-pane",
+  "tmux rename-session, rename-window, select-pane, select-window, select-layout, resize-pane, resize-window",
+  "tmux set-option, set-window-option, set-environment, set-hook, bind-key, unbind-key, source-file (the server's settings and the config reload)",
+]
+
+[[settings]]
+key = "TMUX_SOCKET"
+about = "which tmux server to use: a socket name (tmux -L name) or the path of a socket (tmux -S path); leave empty for the default server"
+default = ""
+
+[[sources]]
+kind = "module"
+name = "tmux"
+module = "tmux.mjs"
+api = "api.d.ts"
+
+[[roles]]
+name = "operator"
+when = "a request to run something in a pane, send keys, or create, rename, kill, resize or reload tmux things"
+patterns = ["^(please )?(send|type|run|start|open|create|kill|close|rename|resize|reload|split|restart)\\b"]
+instructions = "roles/operator.md"
+
+[[roles]]
+name = "finder"
+when = "a question about which pane has an error, a server or some output, or what a pane printed"
+patterns = ["\\bwhich (pane|window|session)\\b", "\\bwhere is\\b.*\\b(running|server|build)\\b", "\\bwhat did\\b.*\\b(print|say|show|output)\\b"]
+instructions = "roles/finder.md"
