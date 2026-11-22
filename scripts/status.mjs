@@ -12,11 +12,10 @@ export default async function ({ tmux }, { target, socket } = {}) {
   const t = socket ? tmux.at(String(socket)) : tmux;
   if (target) return t.state(target);
   const panes = (await t.panes()).slice(0, 60);
-  const rows = [];
-  for (const p of panes) {
+  const rows = await Promise.all(panes.map(async (p) => {
     const s = await t.state(p.id);
-    rows.push({ target: p.target, id: p.id, state: s.state, ...(s.state === "exited" ? { exitStatus: s.exitStatus, exitSignal: s.exitSignal } : {}), command: p.foreground?.command ?? p.command, ran: p.foreground?.age ?? p.paneAge, evidence: s.evidence });
-  }
+    return { target: p.target, id: p.id, state: s.state, ...(s.state === "exited" ? { exitStatus: s.exitStatus, exitSignal: s.exitSignal } : {}), command: p.foreground?.command ?? p.command, ran: p.foreground?.age ?? p.paneAge, evidence: s.evidence };
+  }));
   rows.sort((a, b) => ORDER[a.state] - ORDER[b.state]);
   const counts = {};
   for (const r of rows) counts[r.state] = (counts[r.state] ?? 0) + 1;

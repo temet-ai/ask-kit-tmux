@@ -19,10 +19,10 @@ export default async function ({ tmux }, { target, match, lines = 80, socket } =
     picks = (await t.panes()).filter((p) => [p.foreground?.command, p.command, p.cwd, p.title, p.window.name, p.session].some((v) => v && re.test(v))).slice(0, 4);
     if (!picks.length) return { captures: [], maskedLines: 0, note: `no pane matches ${match}; run the overview script to see every pane` };
   } else throw new Error("give target (a pane) or match (a regex)");
+  const got = await Promise.all(picks.map(async (p) => [p, await t.capture(p.id, { lines })]));
   const captures = [];
   let maskedLines = 0;
-  for (const p of picks) {
-    const c = await t.capture(p.id, { lines });
+  for (const [p, c] of got) {
     maskedLines += c.masked;
     captures.push({ target: p.target, command: p.foreground?.command ?? p.command, cwd: p.cwd, text: c.text, lines: c.lines, masked: c.masked, ...(c.cut ? { cut: c.cut } : {}) });
   }
