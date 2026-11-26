@@ -1,6 +1,6 @@
 id = "temet.tmux"
 name = "tmux"
-version = "0.1.0"
+version = "0.1.1"
 min_ask_kit = "0.2.0"
 requires = ["tmux"]
 platforms = ["linux", "macos"]
@@ -18,6 +18,7 @@ acts = [
   "tmux rename-session, rename-window, select-pane, select-window, select-layout, resize-pane, resize-window",
   "tmux set-option, set-window-option, set-environment, set-hook, bind-key, unbind-key, source-file (the server's settings and the config reload)",
 ]
+reads = ["tmux ls", "tmux list-sessions", "tmux list-windows", "tmux list-panes", "tmux capture-pane", "tmux show-options"]
 
 [[settings]]
 key = "TMUX_SOCKET"
